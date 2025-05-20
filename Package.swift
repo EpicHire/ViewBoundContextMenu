@@ -6,21 +6,24 @@ import PackageDescription
 let package = Package(
     name: "ViewBoundContextMenu",
     platforms: [
-      .iOS(.v13),
-      .macCatalyst(.v13),
-      .macOS(.v10_15)
+        .iOS(.v13)
     ],
     products: [
         .library(
             name: "ViewBoundContextMenu",
-            targets: ["ViewBoundContextMenu"]),
+            targets: ["ViewBoundContextMenu"]
+        ),
     ],
     dependencies: [
-      .package(url: "https://github.com/SwiftUIX/SwiftUIX", from: "0.1.2")
+        .package(
+            url: "https://github.com/SwiftUIX/SwiftUIX",
+            from: "0.1.2"
+        )
     ],
     targets: [
         .target(
             name: "ViewBoundContextMenu",
-            dependencies: ["SwiftUIX"])
+            dependencies: ["SwiftUIX"]
+        )
     ]
 )
