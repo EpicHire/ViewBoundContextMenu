@@ -56,11 +56,6 @@ private extension ContextInteractableView {
                     hostingView!.topAnchor.constraint(equalTo: topAnchor),
                     hostingView!.bottomAnchor.constraint(equalTo: bottomAnchor)
                 ])
-                
-                hostingView!.layoutIfNeeded()
-                let radius = min(hostingView!.bounds.width, hostingView!.bounds.height) / 2
-                hostingView!.layer.cornerRadius = radius
-                hostingView!.layer.masksToBounds = true
             } else {
                 hostingView?.rootView = AnyView(content)
             }
@@ -86,6 +81,27 @@ extension ContextInteractableView: UIContextMenuInteractionDelegate {
                 )
             }
         )
+    }
+    
+    // when the menu is about to appear, tell it to use a circle
+    public func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        previewForHighlightingMenuWithConfiguration config: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        let params = UIPreviewParameters()
+        // ovalIn: the hostingView’s bounds → perfect circle
+        params.visiblePath = UIBezierPath(ovalIn: hostingView!.bounds)
+        return UITargetedPreview(view: hostingView!, parameters: params)
+    }
+    
+    // same for the dismiss‑preview if you want consistency
+    public func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        previewForDismissingMenuWithConfiguration config: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        let params = UIPreviewParameters()
+        params.visiblePath = UIBezierPath(ovalIn: hostingView!.bounds)
+        return UITargetedPreview(view: hostingView!, parameters: params)
     }
 }
 
