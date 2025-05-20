@@ -17,6 +17,7 @@ public struct ViewBoundContextMenu: UIViewRepresentable {
         let view = ContextInteractableView()
         view.actions = actions
         view.content = content
+        view.preview = preview
         
         return view
     }
@@ -24,5 +25,6 @@ public struct ViewBoundContextMenu: UIViewRepresentable {
     public func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.actions = actions
         uiView.content = content
+        uiView.preview = preview
     }
 }
