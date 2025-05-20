@@ -56,6 +56,11 @@ private extension ContextInteractableView {
                     hostingView!.topAnchor.constraint(equalTo: topAnchor),
                     hostingView!.bottomAnchor.constraint(equalTo: bottomAnchor)
                 ])
+                
+                hostingView!.layoutIfNeeded()
+                let radius = min(hostingView!.bounds.width, hostingView!.bounds.height) / 2
+                hostingView!.layer.cornerRadius = radius
+                hostingView!.layer.masksToBounds = true
             } else {
                 hostingView?.rootView = AnyView(content)
             }
