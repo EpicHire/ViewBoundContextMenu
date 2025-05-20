@@ -5,10 +5,12 @@ public struct ViewBoundContextMenu: UIViewRepresentable {
     
     var actions: [ContextAction]
     var content: () -> any View
+    var preview: (() -> any View)?
     
-    init(actions: [ContextAction] = [], content: @escaping () -> any View) {
+    init(actions: [ContextAction] = [], content: @escaping () -> any View, preview: (() -> any View)? = nil) {
         self.actions = actions
         self.content = content
+        self.preview = preview
     }
     
     public func makeUIView(context: Context) -> ContextInteractableView {

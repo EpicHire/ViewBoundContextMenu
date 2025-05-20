@@ -12,6 +12,8 @@ public class ContextInteractableView: UIView {
         }
     }
     
+    var preview: (() -> any View)?
+    
     private var hostingView: UIHostingView<AnyView>?
     
     init() {
@@ -71,7 +73,10 @@ extension ContextInteractableView: UIContextMenuInteractionDelegate {
         .init(
             identifier: nil,
             previewProvider: {
-                UIHostingController(rootView: Text("Preview"))
+                if let preview = self.preview {
+                    return UIHostingController(rootView: AnyView(preview()))
+                }
+                return nil
             },
             actionProvider: { [weak self] _ in
                 guard let self = self else { return nil }
