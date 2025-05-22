@@ -14,6 +14,8 @@ public class ContextInteractableView: UIView {
     
     var preview: (() -> any View)?
     
+    var previewShape: PreviewShape = .roundedRectangle(cornerRadius: 10)
+    
     private var hostingView: UIHostingView<AnyView>?
     
     init() {
@@ -73,10 +75,21 @@ extension ContextInteractableView: UIContextMenuInteractionDelegate {
         .init(
             identifier: nil,
             previewProvider: {
-                if let preview = self.preview {
-                    return UIHostingController(rootView: AnyView(preview()))
-                }
-                return nil
+                guard let preview = self.preview else { return nil }
+                
+                // 1. host your SwiftUI preview
+                let host = UIHostingController(rootView: AnyView(preview()))
+                host.view.backgroundColor = .clear
+                
+                // 2. force a layout pass so Auto‑Layout & SwiftUI have a chance to size everything
+                host.view.setNeedsLayout()
+                host.view.layoutIfNeeded()
+                
+                // 3. measure the “compressed” fitting size
+                let targetSize = host.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+                host.preferredContentSize = targetSize
+                
+                return host
             },
             actionProvider: { [weak self] _ in
                 guard let self = self else { return nil }
@@ -95,7 +108,15 @@ extension ContextInteractableView: UIContextMenuInteractionDelegate {
     ) -> UITargetedPreview? {
         let params = UIPreviewParameters()
         // ovalIn: the hostingView’s bounds → perfect circle
-        params.visiblePath = UIBezierPath(ovalIn: hostingView!.bounds)
+        switch previewShape {
+        case .circle:
+            params.visiblePath = UIBezierPath(ovalIn: hostingView!.bounds)
+        case .roundedRectangle(let radius):
+            params.visiblePath = UIBezierPath(
+                roundedRect: hostingView!.bounds,
+                cornerRadius: radius
+            )
+        }
         return UITargetedPreview(view: hostingView!, parameters: params)
     }
     
@@ -105,9 +126,22 @@ extension ContextInteractableView: UIContextMenuInteractionDelegate {
         previewForDismissingMenuWithConfiguration config: UIContextMenuConfiguration
     ) -> UITargetedPreview? {
         let params = UIPreviewParameters()
-        params.visiblePath = UIBezierPath(ovalIn: hostingView!.bounds)
+        switch previewShape {
+        case .circle:
+            params.visiblePath = UIBezierPath(ovalIn: hostingView!.bounds)
+        case .roundedRectangle(let radius):
+            params.visiblePath = UIBezierPath(
+                roundedRect: hostingView!.bounds,
+                cornerRadius: radius
+            )
+        }
         return UITargetedPreview(view: hostingView!, parameters: params)
     }
+}
+
+public enum PreviewShape {
+    case circle
+    case roundedRectangle(cornerRadius: CGFloat)
 }
 
 private extension ContextAction {
